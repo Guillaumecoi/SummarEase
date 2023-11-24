@@ -1,4 +1,4 @@
-package app.summerease.model;
+package app.summarease.model;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
