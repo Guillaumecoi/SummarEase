@@ -1,6 +1,7 @@
-package app.summarease.model.document;
+package app.summarease.model.entities.document;
 
-import app.summarease.model.document.interfaces.DatabaseObject;
+import app.summarease.model.entities.Chapter;
+import app.summarease.model.entities.interfaces.DatabaseObject;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

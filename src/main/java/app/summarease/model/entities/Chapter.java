@@ -1,6 +1,6 @@
-package app.summarease.model.document;
+package app.summarease.model.entities;
 
-import app.summarease.model.document.interfaces.DatabaseObject;
+import app.summarease.model.entities.interfaces.DatabaseObject;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
