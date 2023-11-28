@@ -12,6 +12,10 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
 
+    /**
+     * Constructor
+     * @param documentRepository the document repository
+     */
     public DocumentService(DocumentRepository documentRepository) {
         this.documentRepository = documentRepository;
     }
