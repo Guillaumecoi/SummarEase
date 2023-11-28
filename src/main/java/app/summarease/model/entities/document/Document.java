@@ -1,7 +1,6 @@
 package app.summarease.model.entities.document;
 
 import app.summarease.model.entities.Chapter;
-import app.summarease.model.entities.interfaces.DatabaseObject;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter @Setter @NoArgsConstructor @Entity
-public class Document implements Serializable, DatabaseObject {
+public class Document implements Serializable {
     // Attributes
     @Id
     private String id;
@@ -24,7 +23,7 @@ public class Document implements Serializable, DatabaseObject {
     private String description;
     // Todo image
     // Contains
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "parent")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "parentDocument")
     private List<Chapter> chapters;
     //private @NonNull List<Content> contents;
     // Metadata

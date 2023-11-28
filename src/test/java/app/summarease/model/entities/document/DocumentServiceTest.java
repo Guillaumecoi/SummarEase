@@ -1,11 +1,13 @@
 package app.summarease.model.entities.document;
 
+import app.summarease.model.entities.system.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -85,5 +87,21 @@ class DocumentServiceTest {
         assertEquals(returnedDoc.getDescription(), doc1.getDescription(), "The description should remain the same");
         // Verifies that the method is only called once
         verify(documentRepository, times(1)).findById(id1);
+    }
+
+    @Test
+    void TestFindById_Failure() {
+        // Arrange
+        String id = "123456789";
+
+        given(documentRepository.findById(Mockito.any(String.class))).willReturn(Optional.empty()); // Mocks database
+
+        // Act & Assert
+        Exception exception = assertThrows(ObjectNotFoundException.class, () -> {
+            documentService.findById(id);
+        });
+        assertEquals("Could not find document with Id :" + id, exception.getMessage());
+        // Verifies that the method is only called once
+        verify(documentRepository, times(1)).findById(id);
     }
 }
