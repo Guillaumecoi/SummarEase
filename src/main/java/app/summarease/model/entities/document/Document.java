@@ -13,6 +13,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter @Setter @NoArgsConstructor @Entity
@@ -34,7 +35,7 @@ public class Document implements Serializable {
     private String imageUrl;
     // Contains
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "parentDocument")
-    private List<Chapter> chapters;
+    private List<Chapter> chapters = new ArrayList<>();
     //private @NonNull List<Content> contents;
     // Metadata
 
@@ -43,6 +44,11 @@ public class Document implements Serializable {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_FORMAT)
     private LocalDateTime modifiedDate;
+
+    public void addChapter(Chapter chapter) {
+        chapter.setParentDocument(this);
+        this.chapters.add(chapter);
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -1,13 +1,24 @@
 package app.summarease.model.entities.system;
 
 import app.summarease.model.entities.chapter.Chapter;
+import app.summarease.model.entities.chapter.ChapterRepository;
 import app.summarease.model.entities.document.Document;
+import app.summarease.model.entities.document.DocumentRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
+@Component
 public class DBDataInitializer implements CommandLineRunner {
+
+    private final DocumentRepository documentRepository;
+    private final ChapterRepository chapterRepository;
+
+    public DBDataInitializer(DocumentRepository documentRepository, ChapterRepository chapterRepository) {
+        this.documentRepository = documentRepository;
+        this.chapterRepository = chapterRepository;
+    }
 
 
     @Override
@@ -23,28 +34,29 @@ public class DBDataInitializer implements CommandLineRunner {
         document1.setImageUrl("https://picsum.photos/id/1/200/300");
         document1.setCreatedDate(LocalDateTime.of(2020, 1, 1,0,0)); // January 1, 2020 00:00:00
         document1.setModifiedDate(LocalDateTime.now().minusDays(1)); // Yesterday
-        document1.setChapters(List.of(doc1Chapter1, doc1Chapter2, doc1Chapter3));
+        // add chapters
+        document1.addChapter(doc1Chapter1);
+        document1.addChapter(doc1Chapter3);
 
         doc1Chapter1.setId("1");
         doc1Chapter1.setTitle("Introduction");
         doc1Chapter1.setDescription("This is the introduction chapter.");
         doc1Chapter1.setImageUrl("https://picsum.photos/id/4/200/300");
         doc1Chapter1.setNumbered(false);
-        doc1Chapter1.setParentDocument(document1);
+        doc1Chapter1.addSubchapter(doc1Chapter2);
+
 
         doc1Chapter2.setId("2");
         doc1Chapter2.setTitle("Getting Started");
         doc1Chapter2.setDescription("This is the getting started chapter.");
         doc1Chapter2.setImageUrl("https://picsum.photos/id/5/200/300");
         doc1Chapter2.setNumbered(true);
-        doc1Chapter2.setParentChapter(doc1Chapter1);
 
         doc1Chapter3.setId("3");
         doc1Chapter3.setTitle("Advanced Features");
         doc1Chapter3.setDescription("This is the advanced features chapter.");
         doc1Chapter3.setImageUrl("https://picsum.photos/id/6/200/300");
         doc1Chapter3.setNumbered(true);
-        doc1Chapter3.setParentDocument(document1);
 
 
         Document document2 = new Document();
@@ -65,6 +77,14 @@ public class DBDataInitializer implements CommandLineRunner {
         document3.setCreatedDate(LocalDateTime.of(2022, 5, 15, 9, 30)); // May 15, 2022 09:30:00
         document3.setModifiedDate(LocalDateTime.now().minusDays(3)); // Three days ago
 
+
+        documentRepository.save(document1);
+        documentRepository.save(document2);
+        documentRepository.save(document3);
+
+        chapterRepository.save(doc1Chapter1);
+        chapterRepository.save(doc1Chapter2);
+        chapterRepository.save(doc1Chapter3);
     }
 
 }
