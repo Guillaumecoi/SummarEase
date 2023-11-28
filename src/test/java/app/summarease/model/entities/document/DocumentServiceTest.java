@@ -60,7 +60,7 @@ class DocumentServiceTest {
 
         documents = new ArrayList<>();
         documents.add(document1);
-        documents.add(this.document2);
+        documents.add(document2);
     }
 
     @AfterEach
@@ -68,11 +68,9 @@ class DocumentServiceTest {
     }
 
     @Test
-    void TestFindById_Success() {
+    void testFindById_Success() {
         // Arrange
         String id = document1.getId();
-        //Todo test for chapters and content
-
         given(documentRepository.findById(id)).willReturn(Optional.of(document1)); // Mocks database
 
         // Act
@@ -86,24 +84,18 @@ class DocumentServiceTest {
         assertEquals(document1.getImageUrl(), returnedDoc.getImageUrl(), "The imageUrl should remain the same");
         assertEquals(document1.getCreatedDate(), returnedDoc.getCreatedDate(), "The createdDate should remain the same");
         assertEquals(document1.getModifiedDate(), returnedDoc.getModifiedDate(), "The modifiedDate should remain the same");
-
-        // Verifies that the method is only called once
-        verify(documentRepository, times(1)).findById(id);
+        verify(documentRepository, times(1)).findById(id); // Verifying that the repository's findById method was called exactly once with document1's ID
     }
 
     @Test
-    void TestFindById_Failure() {
+    void testFindById_Failure() {
         // Arrange
         String id = document1.getId();
-
         given(documentRepository.findById(Mockito.any(String.class))).willReturn(Optional.empty()); // Mocks database
 
         // Act & Assert
-        Exception exception = assertThrows(ObjectNotFoundException.class, () -> {
-            documentService.findById(id);
-        });
+        Exception exception = assertThrows(ObjectNotFoundException.class, () -> documentService.findById(id));
         assertEquals("Could not find document with Id: " + id, exception.getMessage());
-        // Verifies that the method is only called once
-        verify(documentRepository, times(1)).findById(id);
+        verify(documentRepository, times(1)).findById(id); // Verifying that the repository's findById method was called exactly once with document1's ID
     }
 }

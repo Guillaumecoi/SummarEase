@@ -1,4 +1,4 @@
-package app.summarease.model.entities;
+package app.summarease.model.entities.chapter;
 
 import app.summarease.model.entities.document.Document;
 import jakarta.persistence.*;
@@ -11,6 +11,10 @@ import java.util.List;
 
 @Getter @Setter @NoArgsConstructor @Entity
 public class Chapter implements Serializable {
+    // Static Attributes
+    @Getter
+    private final static String BASE_URL = "/api/v1/chapters/";
+
     // Attributes
     @Id
     private String id;
@@ -40,5 +44,17 @@ public class Chapter implements Serializable {
     public void setParentChapter(Chapter chapter) {
         this.parentChapter = chapter;
         this.parentDocument = null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Chapter )) return false;
+        return id != null && id.equals(((Chapter) o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }
