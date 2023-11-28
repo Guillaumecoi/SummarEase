@@ -1,6 +1,6 @@
 package app.summarease.model.entities.document;
 
-import app.summarease.model.entities.Chapter;
+import app.summarease.model.entities.chapter.Chapter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -43,4 +43,17 @@ public class Document implements Serializable {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_FORMAT)
     private LocalDateTime modifiedDate;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Document )) return false;
+        return id != null && id.equals(((Document) o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
 }

@@ -67,7 +67,7 @@ class DocumentControllerTest {
 
         documents = new ArrayList<>();
         documents.add(document1);
-        documents.add(this.document2);
+        documents.add(document2);
     }
 
     @AfterEach
@@ -80,8 +80,8 @@ class DocumentControllerTest {
         String id = document1.getId();
         given(documentService.findById(id)).willReturn(document1);
 
-        // Act
-        this.mockMvc.perform(get(this.baseUrl + id).accept(MediaType.APPLICATION_JSON))
+        // Act & Assert
+        this.mockMvc.perform(get(baseUrl + id).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
                 .andExpect(jsonPath("$.message").value("Find One Success"))
@@ -98,15 +98,15 @@ class DocumentControllerTest {
     @Test
     void TestFindById_Fail() throws Exception {
         // Arrange
-        String id = document1.getId();
+        String id = "invalidId";
         given(documentService.findById(id)).willThrow(new ObjectNotFoundException("document", id));
 
-        // Act
-        this.mockMvc.perform(get(this.baseUrl + id).accept(MediaType.APPLICATION_JSON))
+        // Act & Assert
+        this.mockMvc.perform(get(baseUrl + id).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
                 .andExpect(jsonPath("$.message").value("Could not find document with Id: " + id))
-                .andExpect(jsonPath("$.data").doesNotExist());
+                .andExpect(jsonPath("$.data").isEmpty());
     }
 
 }

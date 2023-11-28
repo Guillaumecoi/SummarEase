@@ -26,7 +26,7 @@ public class DocumentController {
      * @return the document
      */
     @GetMapping("/api/v1/documents/{documentId}")
-    public Result findDocumentById(@PathVariable String documentId) {
+    public Result findById(@PathVariable String documentId) {
         Document foundDocument = this.documentService.findById(documentId);
         return new Result(true, StatusCode.SUCCESS, "Find One Success", foundDocument);
     }
