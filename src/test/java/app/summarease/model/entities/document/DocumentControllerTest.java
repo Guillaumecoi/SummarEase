@@ -42,8 +42,6 @@ class DocumentControllerTest {
 
     Document document2;
 
-
-    //Todo createdDate and modifiedDate
     //Todo test for chapters and content
 
 

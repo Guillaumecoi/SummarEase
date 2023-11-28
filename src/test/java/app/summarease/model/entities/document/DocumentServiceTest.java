@@ -34,8 +34,6 @@ class DocumentServiceTest {
 
     Document document2;
 
-
-    //Todo createdDate and modifiedDate
     //Todo test for chapters and content
 
 
@@ -73,7 +71,6 @@ class DocumentServiceTest {
     void TestFindById_Success() {
         // Arrange
         String id = document1.getId();
-        //Todo createdDate and modifiedDate
         //Todo test for chapters and content
 
         given(documentRepository.findById(id)).willReturn(Optional.of(document1)); // Mocks database
