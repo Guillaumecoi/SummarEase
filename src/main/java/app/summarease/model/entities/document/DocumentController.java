@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @RestController
 public class DocumentController {
@@ -32,4 +35,22 @@ public class DocumentController {
         DocumentDto foundDocumentDto = this.documentToDocumentDtoConverter.convert(foundDocument);
         return new Result(true, StatusCode.SUCCESS, "Find One Success", foundDocumentDto);
     }
+
+
+    /**
+     * Find all documents
+     * @return all documents
+     */
+    @GetMapping("/api/v1/documents")
+    public Result findAll() {
+        List<Document> foundDocuments = this.documentService.findAll();
+        List<DocumentDto> foundDocumentDtos = new ArrayList<>();
+        for (Document document : foundDocuments) {
+            foundDocumentDtos.add(this.documentToDocumentDtoConverter.convert(document));
+        }
+        return new Result(true, StatusCode.SUCCESS, "Find All Success", foundDocumentDtos);
+    }
+
+
+
 }

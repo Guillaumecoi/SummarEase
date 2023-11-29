@@ -20,9 +20,9 @@ import java.util.List;
 public class Document implements Serializable {
     // Static Attributes
     @Getter
-    private final static String BASE_URL = "/api/v1/documents/";
+    private final static String BASE_URL = "/api/v1/documents";
     @Getter
-    private static final String DATE_TIME_FORMAT = "dd-MM-yyyy'T'HH:mm:ss";
+    private static final String DATE_TIME_FORMAT = "dd-MM-yyyy'T'HH:mm:ss"; // Also change in DocumentDto
     @Getter
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
 
@@ -62,5 +62,4 @@ public class Document implements Serializable {
         }
         return chapterIds;
     }
-
 }

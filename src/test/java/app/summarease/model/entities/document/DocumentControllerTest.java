@@ -75,13 +75,13 @@ class DocumentControllerTest {
     }
 
     @Test
-    void TestFindById_Success() throws Exception {
+    void testFindById_Success() throws Exception {
         // Arrange
         Integer id = document1.getId();
         given(documentService.findById(id)).willReturn(document1);
 
         // Act & Assert
-        this.mockMvc.perform(get(baseUrl + id).accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(baseUrl + "/" + id).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
                 .andExpect(jsonPath("$.message").value("Find One Success"))
@@ -96,17 +96,43 @@ class DocumentControllerTest {
     }
 
     @Test
-    void TestFindById_Fail() throws Exception {
+    void testFindById_Failure() throws Exception {
         // Arrange
         Integer id = -1;
         given(documentService.findById(id)).willThrow(new ObjectNotFoundException("document", id));
 
         // Act & Assert
-        this.mockMvc.perform(get(baseUrl + id).accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(baseUrl + "/" + id).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
                 .andExpect(jsonPath("$.message").value("Could not find document with Id: " + id))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
 
+    @Test
+    void testFindAll_Success() throws Exception{
+        // Arrange
+        given(documentService.findAll()).willReturn(documents);
+
+        // Act & Assert
+        this.mockMvc.perform(get(baseUrl).accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.flag").value(true))
+                .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
+                .andExpect(jsonPath("$.message").value("Find All Success"))
+                .andExpect(jsonPath("$.data[0].id").value(document1.getId()))
+                .andExpect(jsonPath("$.data[0].title").value(document1.getTitle()))
+                .andExpect(jsonPath("$.data[0].author").value(document1.getAuthor()))
+                .andExpect(jsonPath("$.data[0].description").value(document1.getDescription()))
+                .andExpect(jsonPath("$.data[0].imageUrl").value(document1.getImageUrl()))
+                .andExpect(jsonPath("$.data[0].createdDate").value(document1.getCreatedDate().format(formatter)))
+                .andExpect(jsonPath("$.data[0].modifiedDate").value(document1.getModifiedDate().format(formatter)))
+                .andExpect(jsonPath("$.data[1].id").value(document2.getId()))
+                .andExpect(jsonPath("$.data[1].title").value(document2.getTitle()))
+                .andExpect(jsonPath("$.data[1].author").value(document2.getAuthor()))
+                .andExpect(jsonPath("$.data[1].description").value(document2.getDescription()))
+                .andExpect(jsonPath("$.data[1].imageUrl").value(document2.getImageUrl()))
+                .andExpect(jsonPath("$.data[1].createdDate").value(document2.getCreatedDate().format(formatter)))
+                .andExpect(jsonPath("$.data[1].modifiedDate").value(document2.getModifiedDate().format(formatter)
+        ));
+    }
 }

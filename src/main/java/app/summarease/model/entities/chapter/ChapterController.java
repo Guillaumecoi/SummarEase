@@ -32,4 +32,5 @@ public class ChapterController {
         ChapterDto foundChapterDto = this.chapterToChapterDtoConverter.convert(foundChapter);
         return new Result(true, StatusCode.SUCCESS, "Find One Success", foundChapterDto);
     }
+
 }

@@ -98,4 +98,17 @@ class DocumentServiceTest {
         assertEquals("Could not find document with Id: " + id, exception.getMessage());
         verify(documentRepository, times(1)).findById(id); // Verifying that the repository's findById method was called exactly once with document1's ID
     }
+
+    @Test
+    void testFindAll_Success() {
+        // Arrange
+        given(documentRepository.findAll()).willReturn(documents); // Mocks database
+
+        // Act
+        List<Document> returnedDocuments = documentService.findAll();
+
+        // Assert
+        assertEquals(documents.size(), returnedDocuments.size(), "The number of documents should be the same");
+        verify(documentRepository, times(1)).findAll(); // Verifying that the repository's findAll method was called exactly once
+    }
 }
