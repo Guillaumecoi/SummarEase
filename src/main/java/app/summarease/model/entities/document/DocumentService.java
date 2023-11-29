@@ -25,7 +25,7 @@ public class DocumentService {
      * @throws ObjectNotFoundException if the document could not be found
      */
     @Observed(name = "document", contextualName = "findByIdService")
-    public Document findById(String documentId) throws ObjectNotFoundException {
+    public Document findById(Integer documentId) throws ObjectNotFoundException {
        return this.documentRepository.findById(documentId)
                .orElseThrow(() -> new ObjectNotFoundException("document", documentId));
     }

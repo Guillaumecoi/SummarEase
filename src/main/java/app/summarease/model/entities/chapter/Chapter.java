@@ -18,7 +18,7 @@ public class Chapter implements Serializable {
 
     // Attributes
     @Id
-    private String id;
+    private Integer id;
     private String title;
     private String description;
     private boolean isNumbered; // true (default) e.g. ch1 (true), introduction (false)
@@ -38,13 +38,13 @@ public class Chapter implements Serializable {
 
     // Ensure that only one parent is set
     public void setParentDocument(Document document) {
-        this.parentDocument = document;
         this.parentChapter = null;
+        this.parentDocument = document;
     }
 
     public void setParentChapter(Chapter chapter) {
-        this.parentChapter = chapter;
         this.parentDocument = null;
+        this.parentChapter = chapter;
     }
 
     public void addSubchapter(Chapter chapter) {
@@ -52,15 +52,4 @@ public class Chapter implements Serializable {
         this.subchapters.add(chapter);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Chapter )) return false;
-        return id != null && id.equals(((Chapter) o).getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
 }

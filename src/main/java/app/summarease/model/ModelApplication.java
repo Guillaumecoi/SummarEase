@@ -10,11 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ModelApplication {
 
-	@GetMapping("/message")
-	public String getMessage() {
-		return "Welcome to Summarease";
-	}
-
 	public static void main(String[] args) {
 		SpringApplication.run(ModelApplication.class, args);
 	}

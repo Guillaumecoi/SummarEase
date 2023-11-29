@@ -25,7 +25,7 @@ public class ChapterService {
      * @throws ObjectNotFoundException if the chapter could not be found
      */
     @Observed(name = "chapter", contextualName = "findByIdService")
-    public Chapter findById(String chapterId) throws ObjectNotFoundException {
+    public Chapter findById(Integer chapterId) throws ObjectNotFoundException {
        return this.chapterRepository.findById(chapterId)
                .orElseThrow(() -> new ObjectNotFoundException("chapter", chapterId));
     }
