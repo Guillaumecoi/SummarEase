@@ -13,6 +13,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter @Setter @NoArgsConstructor @Entity
@@ -27,33 +28,39 @@ public class Document implements Serializable {
 
     // Attributes
     @Id
-    private String id;
+    private Integer id;
     private String title;
     private String author;
     private String description;
     private String imageUrl;
-    // Contains
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "parentDocument")
-    private List<Chapter> chapters;
-    //private @NonNull List<Content> contents;
-    // Metadata
 
+    // Metadata
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_FORMAT)
     private LocalDateTime createdDate;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_FORMAT)
     private LocalDateTime modifiedDate;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Document )) return false;
-        return id != null && id.equals(((Document) o).getId());
+    // Relations to other objects
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "parentDocument")
+    private List<Chapter> chapters = new ArrayList<>();
+    //private @NonNull List<Content> contents;
+
+
+    public void addChapter(Chapter chapter) {
+        chapter.setParentDocument(this);
+        this.chapters.add(chapter);
     }
 
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+    /**
+     * Get a list of all chapter ids
+     * @return a list of all chapter ids
+     */
+    public List<Integer> getChapterIds() {
+        List<Integer> chapterIds = new ArrayList<>();
+        for (Chapter chapter : this.chapters) {
+            chapterIds.add(chapter.getId());
+        }
+        return chapterIds;
     }
 
 }

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter @Setter @NoArgsConstructor @Entity
@@ -17,14 +18,14 @@ public class Chapter implements Serializable {
 
     // Attributes
     @Id
-    private String id;
+    private Integer id;
     private String title;
     private String description;
     private boolean isNumbered; // true (default) e.g. ch1 (true), introduction (false)
     private String imageUrl;
     // Relations to other objects
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "parentChapter")
-    private List<Chapter> subchapters;
+    private List<Chapter> subchapters = new ArrayList<>();
     //private List<Content> contents;
 
     @ManyToOne
@@ -37,24 +38,18 @@ public class Chapter implements Serializable {
 
     // Ensure that only one parent is set
     public void setParentDocument(Document document) {
-        this.parentDocument = document;
         this.parentChapter = null;
+        this.parentDocument = document;
     }
 
     public void setParentChapter(Chapter chapter) {
-        this.parentChapter = chapter;
         this.parentDocument = null;
+        this.parentChapter = chapter;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Chapter )) return false;
-        return id != null && id.equals(((Chapter) o).getId());
+    public void addSubchapter(Chapter chapter) {
+        chapter.setParentChapter(this);
+        this.subchapters.add(chapter);
     }
 
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
 }

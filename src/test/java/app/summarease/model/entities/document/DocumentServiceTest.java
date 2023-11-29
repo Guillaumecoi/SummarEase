@@ -40,7 +40,7 @@ class DocumentServiceTest {
     @BeforeEach
     void setUp() {
         document1 = new Document();
-        document1.setId("1");
+        document1.setId(1);
         document1.setTitle("Document 1");
         document1.setAuthor("Author 1");
         document1.setDescription("Description 1");
@@ -49,7 +49,7 @@ class DocumentServiceTest {
         document1.setModifiedDate(LocalDateTime.now().minusDays(1)); // Yesterday
 
         document2 = new Document();
-        document2.setId("2");
+        document2.setId(2);
         document2.setTitle("Document 2");
         document2.setAuthor("Author 2");
         document2.setDescription("Description 2");
@@ -70,7 +70,7 @@ class DocumentServiceTest {
     @Test
     void testFindById_Success() {
         // Arrange
-        String id = document1.getId();
+        Integer id = document1.getId();
         given(documentRepository.findById(id)).willReturn(Optional.of(document1)); // Mocks database
 
         // Act
@@ -90,8 +90,8 @@ class DocumentServiceTest {
     @Test
     void testFindById_Failure() {
         // Arrange
-        String id = document1.getId();
-        given(documentRepository.findById(Mockito.any(String.class))).willReturn(Optional.empty()); // Mocks database
+        Integer id = document1.getId();
+        given(documentRepository.findById(Mockito.any(Integer.class))).willReturn(Optional.empty()); // Mocks database
 
         // Act & Assert
         Exception exception = assertThrows(ObjectNotFoundException.class, () -> documentService.findById(id));

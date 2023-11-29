@@ -1,5 +1,7 @@
 package app.summarease.model.entities.document;
 
+import app.summarease.model.entities.document.dto.DocumentDto;
+import app.summarease.model.entities.document.dto.DocumentToDocumentDtoConverter;
 import app.summarease.model.entities.system.Result;
 import app.summarease.model.entities.system.StatusCode;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,12 +14,11 @@ public class DocumentController {
 
     private final DocumentService documentService;
 
-    /**
-     * Constructor
-     * @param documentService the document service
-     */
-    public DocumentController(DocumentService documentService) {
+    private final DocumentToDocumentDtoConverter documentToDocumentDtoConverter;
+
+    public DocumentController(DocumentService documentService, DocumentToDocumentDtoConverter documentToDocumentDtoConverter) {
         this.documentService = documentService;
+        this.documentToDocumentDtoConverter = documentToDocumentDtoConverter;
     }
 
     /**
@@ -26,8 +27,9 @@ public class DocumentController {
      * @return the document
      */
     @GetMapping("/api/v1/documents/{documentId}")
-    public Result findById(@PathVariable String documentId) {
+    public Result findById(@PathVariable Integer documentId) {
         Document foundDocument = this.documentService.findById(documentId);
-        return new Result(true, StatusCode.SUCCESS, "Find One Success", foundDocument);
+        DocumentDto foundDocumentDto = this.documentToDocumentDtoConverter.convert(foundDocument);
+        return new Result(true, StatusCode.SUCCESS, "Find One Success", foundDocumentDto);
     }
 }

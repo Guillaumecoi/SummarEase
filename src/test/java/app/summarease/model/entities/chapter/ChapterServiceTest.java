@@ -40,7 +40,7 @@ class ChapterServiceTest {
         parentDocument = new Document();
 
         chapter1 = new Chapter();
-        chapter1.setId("1");
+        chapter1.setId(1);
         chapter1.setTitle("Chapter 1");
         chapter1.setDescription("Description 1");
         chapter1.setNumbered(true);
@@ -48,7 +48,7 @@ class ChapterServiceTest {
         chapter1.setParentDocument(parentDocument);
 
         chapter2 = new Chapter();
-        chapter2.setId("2");
+        chapter2.setId(2);
         chapter2.setTitle("Chapter 2");
         chapter2.setDescription("Description 2");
         chapter2.setNumbered(false);
@@ -99,8 +99,8 @@ class ChapterServiceTest {
     @Test
     void testFindById_Failure() {
         // Arrange
-        String id = chapter1.getId();
-        given(chapterRepository.findById(Mockito.any(String.class))).willReturn(Optional.empty());
+        Integer id = chapter1.getId();
+        given(chapterRepository.findById(Mockito.any(Integer.class))).willReturn(Optional.empty());
 
         // Act & Assert
         Exception exception = assertThrows(ObjectNotFoundException.class, () -> chapterService.findById(id));

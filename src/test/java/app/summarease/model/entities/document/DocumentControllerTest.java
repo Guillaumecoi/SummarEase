@@ -48,7 +48,7 @@ class DocumentControllerTest {
     @BeforeEach
     void setUp() {
         document1 = new Document();
-        document1.setId("1");
+        document1.setId(1);
         document1.setTitle("Document 1");
         document1.setAuthor("Author 1");
         document1.setDescription("Description 1");
@@ -57,7 +57,7 @@ class DocumentControllerTest {
         document1.setModifiedDate(LocalDateTime.now().minusDays(1)); // Yesterday
 
         document2 = new Document();
-        document2.setId("2");
+        document2.setId(2);
         document2.setTitle("Document 2");
         document2.setAuthor("Author 2");
         document2.setDescription("Description 2");
@@ -77,7 +77,7 @@ class DocumentControllerTest {
     @Test
     void TestFindById_Success() throws Exception {
         // Arrange
-        String id = document1.getId();
+        Integer id = document1.getId();
         given(documentService.findById(id)).willReturn(document1);
 
         // Act & Assert
@@ -98,7 +98,7 @@ class DocumentControllerTest {
     @Test
     void TestFindById_Fail() throws Exception {
         // Arrange
-        String id = "invalidId";
+        Integer id = -1;
         given(documentService.findById(id)).willThrow(new ObjectNotFoundException("document", id));
 
         // Act & Assert
