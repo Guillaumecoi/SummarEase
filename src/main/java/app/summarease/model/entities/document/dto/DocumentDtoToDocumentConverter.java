@@ -1,6 +1,7 @@
 package app.summarease.model.entities.document.dto;
 
 import app.summarease.model.entities.document.Document;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class DocumentDtoToDocumentConverter implements Converter<DocumentDto, Document> {
 
     @Override
-    public Document convert(DocumentDto source) {
+    public Document convert(@NotNull DocumentDto source) {
         Document document = new Document();
         document.setId(source.id());
         document.setTitle(source.title());

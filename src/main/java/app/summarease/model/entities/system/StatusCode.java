@@ -1,5 +1,6 @@
 package app.summarease.model.entities.system;
 
+@SuppressWarnings("unused")
 public class StatusCode {
 
     public static final int SUCCESS = 200; // Success

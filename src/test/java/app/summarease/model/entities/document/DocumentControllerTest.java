@@ -1,10 +1,8 @@
 package app.summarease.model.entities.document;
 
 import app.summarease.model.entities.document.dto.DocumentDto;
-import app.summarease.model.entities.document.dto.DocumentToDocumentDtoConverter;
 import app.summarease.model.entities.system.StatusCode;
 import app.summarease.model.entities.system.exceptions.ObjectNotFoundException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,9 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,8 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest @AutoConfigureMockMvc(addFilters = false) // Turn off Spring Security
@@ -300,6 +298,92 @@ class DocumentControllerTest {
                 .andExpect(jsonPath("$.message").value("Provided arguments are invalid, see data for details."))
                 .andExpect(jsonPath("$.data.modifiedDate").value("Modified date cannot be empty"));
 
+    }
+
+    @Test
+    void testUpdateDocument_Success() throws Exception {
+        // Arrange
+        DocumentDto documentDto = new DocumentDto(1L, "Title",
+                "Author",
+                "Description",
+                "https://picsum.photos/id/1/200/300",
+                LocalDateTime.of(2023, 11, 1,0,0),
+                LocalDateTime.now().minusDays(1), null);
+
+        String json = objectMapper.writeValueAsString(documentDto);
+
+        Document savedDocument = new Document();
+        savedDocument.setId(1L);
+        savedDocument.setTitle("Updated Title");
+        savedDocument.setAuthor("Updated Author");
+        savedDocument.setDescription("Updated Description");
+        savedDocument.setImageUrl("https://picsum.photos/id/2/200/300");
+        savedDocument.setCreatedDate(LocalDateTime.of(2023, 11, 1,0,0)); // November 1, 2023 00:00:00
+        savedDocument.setModifiedDate(LocalDateTime.now()); // Today
+
+        given(documentService.update(eq(1L), Mockito.any(Document.class))).willReturn(savedDocument);
+
+        // Act & Assert
+
+        this.mockMvc.perform(put(baseUrl + "/" + savedDocument.getId()).contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.flag").value(true))
+                .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
+                .andExpect(jsonPath("$.message").value("Update Success"))
+                .andExpect(jsonPath("$.data.id").value(savedDocument.getId()))
+                .andExpect(jsonPath("$.data.title").value(savedDocument.getTitle()))
+                .andExpect(jsonPath("$.data.author").value(savedDocument.getAuthor()))
+                .andExpect(jsonPath("$.data.description").value(savedDocument.getDescription()))
+                .andExpect(jsonPath("$.data.imageUrl").value(savedDocument.getImageUrl()))
+                .andExpect(jsonPath("$.data.createdDate").value(savedDocument.getCreatedDate().format(formatter)));
+    }
+
+    @Test
+    void testUpdateDocument_Failure() throws Exception {
+        // Arrange
+        DocumentDto documentDto = new DocumentDto(1L, "Title",
+                "Author",
+                "Description",
+                "https://picsum.photos/id/1/200/300",
+                LocalDateTime.of(2023, 11, 1,0,0),
+                LocalDateTime.now().minusDays(1), null);
+
+        String json = objectMapper.writeValueAsString(documentDto);
+        given(documentService.update(eq(1L), Mockito.any(Document.class))).willThrow(new ObjectNotFoundException("document", 1L));
+
+        // Act & Assert
+        this.mockMvc.perform(put(baseUrl + "/" + 1L).contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(jsonPath("$.flag").value(false))
+                .andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
+                .andExpect(jsonPath("$.message").value("Could not find document with Id: " + 1L))
+                .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void testDeleteDocument_Success() throws Exception {
+        // Arrange
+        Long id = document1.getId();
+        doNothing().when(documentService).delete(id);
+
+        // Act & Assert
+        this.mockMvc.perform(delete(baseUrl + "/" + id).accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.flag").value(true))
+                .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
+                .andExpect(jsonPath("$.message").value("Delete Success"))
+                .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    void testDeleteDocument_Failure() throws Exception {
+        // Arrange
+        Long id = document1.getId();
+        Mockito.doThrow(new ObjectNotFoundException("document", id)).when(documentService).delete(id);
+
+        // Act & Assert
+        this.mockMvc.perform(delete(baseUrl + "/" + id).accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.flag").value(false))
+                .andExpect(jsonPath("$.code").value(StatusCode.NOT_FOUND))
+                .andExpect(jsonPath("$.message").value("Could not find document with Id: " + id))
+                .andExpect(jsonPath("$.data").isEmpty());
     }
 
 }

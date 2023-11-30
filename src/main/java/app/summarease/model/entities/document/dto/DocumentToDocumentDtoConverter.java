@@ -1,7 +1,6 @@
 package app.summarease.model.entities.document.dto;
 
 import app.summarease.model.entities.document.Document;
-import app.summarease.model.entities.document.dto.DocumentDto;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
