@@ -39,10 +39,10 @@ class ChapterControllerTest {
     @BeforeEach
     void setUp() {
         parentDocument = new Document();
-        parentDocument.setId(1);
+        parentDocument.setId(1L);
 
         chapter1 = new Chapter();
-        chapter1.setId(1);
+        chapter1.setId(1L);
         chapter1.setTitle("Chapter 1");
         chapter1.setDescription("Description 1");
         chapter1.setNumbered(true);
@@ -50,7 +50,7 @@ class ChapterControllerTest {
         parentDocument.addChapter(chapter1);
 
         chapter2 = new Chapter();
-        chapter2.setId(2);
+        chapter2.setId(2L);
         chapter2.setTitle("Chapter 2");
         chapter2.setDescription("Description 2");
         chapter2.setNumbered(false);
@@ -69,10 +69,10 @@ class ChapterControllerTest {
     @Test
     void testFindChapterById_Success() throws Exception {
         // Arrange
-        Integer id1 = chapter1.getId();  // chapter1 has parent document
+        Long id1 = chapter1.getId();  // chapter1 has parent document
         given(chapterService.findById(id1)).willReturn(chapter1);
 
-        Integer id2 = chapter2.getId();  // chapter2 has parent chapter
+        Long id2 = chapter2.getId();  // chapter2 has parent chapter
         given(chapterService.findById(id2)).willReturn(chapter2);
 
         // Act & Assert
@@ -104,7 +104,7 @@ class ChapterControllerTest {
     @Test
     void testFindChapterById_Fail() throws Exception{
         // Arrange
-        Integer id = 1;
+        Long id = 1L;
         given(chapterService.findById(id)).willThrow(new ObjectNotFoundException("chapter", id));
 
         // Act & Assert

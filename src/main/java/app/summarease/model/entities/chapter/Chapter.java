@@ -18,7 +18,8 @@ public class Chapter implements Serializable {
 
     // Attributes
     @Id
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String title;
     private String description;
     private boolean isNumbered; // true (default) e.g. ch1 (true), introduction (false)

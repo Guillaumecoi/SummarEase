@@ -5,15 +5,14 @@ import io.micrometer.observation.annotation.Observed;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service @Transactional
 public class DocumentService {
 
     private final DocumentRepository documentRepository;
 
-    /**
-     * Constructor
-     * @param documentRepository the document repository
-     */
+
     public DocumentService(DocumentRepository documentRepository) {
         this.documentRepository = documentRepository;
     }
@@ -25,8 +24,20 @@ public class DocumentService {
      * @throws ObjectNotFoundException if the document could not be found
      */
     @Observed(name = "document", contextualName = "findByIdService")
-    public Document findById(Integer documentId) throws ObjectNotFoundException {
+    public Document findById(Long documentId) throws ObjectNotFoundException {
        return this.documentRepository.findById(documentId)
                .orElseThrow(() -> new ObjectNotFoundException("document", documentId));
+    }
+
+    /**
+     * Find all documents
+     * @return all documents
+     */
+    public List<Document> findAll() {
+        return this.documentRepository.findAll();
+    }
+
+    public Document save(Document document) {
+        return this.documentRepository.save(document);
     }
 }

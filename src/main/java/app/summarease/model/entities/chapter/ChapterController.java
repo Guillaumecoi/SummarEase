@@ -1,7 +1,7 @@
 package app.summarease.model.entities.chapter;
 
-import app.summarease.model.entities.chapter.dto.ChapterToChapterDtoConverter;
 import app.summarease.model.entities.chapter.dto.ChapterDto;
+import app.summarease.model.entities.chapter.dto.ChapterToChapterDtoConverter;
 import app.summarease.model.entities.system.Result;
 import app.summarease.model.entities.system.StatusCode;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,9 +27,10 @@ public class ChapterController {
      * @return the chapter
      */
     @GetMapping("/api/v1/chapters/{chapterId}")
-    public Result findById(@PathVariable Integer chapterId) {
+    public Result findById(@PathVariable Long chapterId) {
         Chapter foundChapter = this.chapterService.findById(chapterId);
         ChapterDto foundChapterDto = this.chapterToChapterDtoConverter.convert(foundChapter);
         return new Result(true, StatusCode.SUCCESS, "Find One Success", foundChapterDto);
     }
+
 }

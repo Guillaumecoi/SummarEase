@@ -2,10 +2,7 @@ package app.summarease.model.entities.document;
 
 import app.summarease.model.entities.chapter.Chapter;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,15 +17,16 @@ import java.util.List;
 public class Document implements Serializable {
     // Static Attributes
     @Getter
-    private final static String BASE_URL = "/api/v1/documents/";
+    private final static String BASE_URL = "/api/v1/documents";
     @Getter
-    private static final String DATE_TIME_FORMAT = "dd-MM-yyyy'T'HH:mm:ss";
+    private static final String DATE_TIME_FORMAT = "dd-MM-yyyy'T'HH:mm:ss"; // Also change in DocumentDto
     @Getter
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
 
     // Attributes
     @Id
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String title;
     private String author;
     private String description;
@@ -55,12 +53,11 @@ public class Document implements Serializable {
      * Get a list of all chapter ids
      * @return a list of all chapter ids
      */
-    public List<Integer> getChapterIds() {
-        List<Integer> chapterIds = new ArrayList<>();
+    public List<Long> getChapterIds() {
+        List<Long> chapterIds = new ArrayList<>();
         for (Chapter chapter : this.chapters) {
             chapterIds.add(chapter.getId());
         }
         return chapterIds;
     }
-
 }
