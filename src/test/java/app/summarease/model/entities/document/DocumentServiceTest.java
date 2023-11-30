@@ -19,8 +19,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentServiceTest {
@@ -117,32 +116,100 @@ class DocumentServiceTest {
     @Test
     void testSave_Success() {
         // Arrange
-        Document newDocument = new Document();
-        newDocument.setTitle("New Document");
-        newDocument.setAuthor("New Author");
-        newDocument.setDescription("New Description");
-        newDocument.setImageUrl("https://picsum.photos/id/3/200/300");
-        newDocument.setCreatedDate(LocalDateTime.of(2020, 1, 3,0,0)); // January 3, 2020 00:00:00
-        newDocument.setModifiedDate(LocalDateTime.now().plusDays(1)); // Tomorrow
-
-        Document savedDocument = new Document();
-        BeanUtils.copyProperties(newDocument, savedDocument);
-        savedDocument.setId(123L); // Simulate the ID assignment by the database
-
-        given(documentRepository.save(Mockito.any(Document.class))).willReturn(savedDocument);
+        given(documentRepository.save(Mockito.any(Document.class))).willReturn(document1);
 
         // Act
-        Document returnedDocument = documentService.save(newDocument);
+        Document returnedDocument = documentService.save(document1);
 
         // Assert
-        assertThat(returnedDocument.getId()).isEqualTo(123L);
-        assertThat(returnedDocument.getTitle()).isEqualTo(newDocument.getTitle());
-        assertThat(returnedDocument.getAuthor()).isEqualTo(newDocument.getAuthor());
-        assertThat(returnedDocument.getDescription()).isEqualTo(newDocument.getDescription());
-        assertThat(returnedDocument.getImageUrl()).isEqualTo(newDocument.getImageUrl());
-        assertThat(returnedDocument.getCreatedDate()).isEqualTo(newDocument.getCreatedDate());
-        assertThat(returnedDocument.getModifiedDate()).isEqualTo(newDocument.getModifiedDate());
+        assertThat(returnedDocument.getId()).isEqualTo(document1.getId());
+        assertThat(returnedDocument.getTitle()).isEqualTo(document1.getTitle());
+        assertThat(returnedDocument.getAuthor()).isEqualTo(document1.getAuthor());
+        assertThat(returnedDocument.getDescription()).isEqualTo(document1.getDescription());
+        assertThat(returnedDocument.getImageUrl()).isEqualTo(document1.getImageUrl());
+        assertThat(returnedDocument.getCreatedDate()).isEqualTo(document1.getCreatedDate());
+        assertThat(returnedDocument.getModifiedDate()).isEqualTo(document1.getModifiedDate());
         verify(documentRepository, times(1)).save(Mockito.any(Document.class));
+    }
+
+    @Test
+    void testUpdate_Success() {
+        // Arrange
+        Document updatedDocument = new Document();
+        updatedDocument.setId(document1.getId());
+        updatedDocument.setTitle("Updated Document");
+        updatedDocument.setAuthor("Updated Author");
+        updatedDocument.setDescription("Updated Description");
+        updatedDocument.setImageUrl("https://picsum.photos/id/4/200/300");
+        updatedDocument.setModifiedDate(LocalDateTime.now().plusDays(2)); // Day after tomorrow
+
+        given(documentRepository.findById(document1.getId())).willReturn(Optional.of(document1));
+        given(documentRepository.save(document1)).willReturn(document1);
+
+        // Act
+        documentService.update(document1.getId(), updatedDocument);
+
+        // Assert
+        assertThat(document1.getId()).isEqualTo(updatedDocument.getId());
+        assertThat(document1.getTitle()).isEqualTo(updatedDocument.getTitle());
+        assertThat(document1.getAuthor()).isEqualTo(updatedDocument.getAuthor());
+        assertThat(document1.getDescription()).isEqualTo(updatedDocument.getDescription());
+        assertThat(document1.getImageUrl()).isEqualTo(updatedDocument.getImageUrl());
+        assertThat(document1.getCreatedDate()).isEqualTo(document1.getCreatedDate());
+        assertThat(document1.getModifiedDate()).isEqualTo(updatedDocument.getModifiedDate());
+
+        verify(documentRepository, times(1)).findById(document1.getId());
+        verify(documentRepository, times(1)).save(document1);
+
+    }
+
+    @Test
+    void testUpdate_Failure() {
+        // Arrange
+        Document updatedDocument = new Document();
+        updatedDocument.setId(document1.getId());
+        updatedDocument.setTitle("Updated Document");
+        updatedDocument.setAuthor("Updated Author");
+        updatedDocument.setDescription("Updated Description");
+        updatedDocument.setImageUrl("https://picsum.photos/id/4/200/300");
+        updatedDocument.setModifiedDate(LocalDateTime.now().plusDays(2)); // Day after tomorrow
+
+        given(documentRepository.findById(document1.getId())).willReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(ObjectNotFoundException.class, () -> documentService.update(document1.getId(), updatedDocument));
+        assertEquals("Could not find document with Id: " + document1.getId(), exception.getMessage());
+
+        verify(documentRepository, times(1)).findById(document1.getId());
+        verify(documentRepository, times(0)).save(Mockito.any(Document.class));
+
+    }
+
+    @Test
+    void testDelete_Success() {
+        // Arrange
+        Long id = document1.getId();
+        given(documentRepository.findById(id)).willReturn(Optional.of(document1));
+        doNothing().when(documentRepository).deleteById(id);
+
+        // Act
+        documentService.delete(id);
+
+        // Assert
+        verify(documentRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void testDelete_Failure() {
+        // Arrange
+        Long id = document1.getId();
+        given(documentRepository.findById(id)).willReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(ObjectNotFoundException.class, () -> documentService.delete(id));
+        assertEquals("Could not find document with Id: " + id, exception.getMessage());
+
+        verify(documentRepository, times(0)).deleteById(id);
     }
 
 }

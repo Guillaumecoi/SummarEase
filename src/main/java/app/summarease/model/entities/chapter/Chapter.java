@@ -25,7 +25,7 @@ public class Chapter implements Serializable {
     private boolean isNumbered; // true (default) e.g. ch1 (true), introduction (false)
     private String imageUrl;
     // Relations to other objects
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "parentChapter")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "parentChapter")
     private List<Chapter> subchapters = new ArrayList<>();
     //private List<Content> contents;
 

@@ -24,11 +24,13 @@ public class Document implements Serializable {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
 
     // Attributes
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true, nullable = false, length = 100)
     private String title;
+    @Column(length = 100)
     private String author;
+    @Column(length = 1000)
     private String description;
     private String imageUrl;
 
@@ -39,9 +41,9 @@ public class Document implements Serializable {
     private LocalDateTime modifiedDate;
 
     // Relations to other objects
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "parentDocument")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "parentDocument")
     private List<Chapter> chapters = new ArrayList<>();
-    //private @NonNull List<Content> contents;
+    //Todo Content
 
 
     public void addChapter(Chapter chapter) {

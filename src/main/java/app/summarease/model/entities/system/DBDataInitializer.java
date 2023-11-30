@@ -22,7 +22,7 @@ public class DBDataInitializer implements CommandLineRunner {
 
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         Document document1 = new Document();
         Chapter doc1Chapter1 = new Chapter();
         Chapter doc1Chapter2 = new Chapter();
