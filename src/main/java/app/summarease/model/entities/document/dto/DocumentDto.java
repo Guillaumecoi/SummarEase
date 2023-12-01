@@ -1,6 +1,8 @@
 package app.summarease.model.entities.document.dto;
 
 
+import app.summarease.model.entities.chapter.Chapter;
+import app.summarease.model.entities.chapter.dto.ChapterDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
@@ -24,5 +26,5 @@ public record DocumentDto(Long id,
                           @NotNull(message = "Modified date cannot be empty")
                           @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy'T'HH:mm:ss")
                           LocalDateTime modifiedDate,
-                          List<Long> chapterIds) {
+                          List<ChapterDto> chapters) {
 }

@@ -1,11 +1,24 @@
 package app.summarease.model.entities.document.dto;
 
+import app.summarease.model.entities.chapter.Chapter;
+import app.summarease.model.entities.chapter.dto.ChapterDto;
+import app.summarease.model.entities.chapter.dto.ChapterToChapterDtoConverter;
 import app.summarease.model.entities.document.Document;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 @Component
 public class DocumentToDocumentDtoConverter implements Converter<Document, DocumentDto> {
+
+    private final ChapterToChapterDtoConverter chapterToChapterDtoConverter;
+
+    public DocumentToDocumentDtoConverter(ChapterToChapterDtoConverter chapterToChapterDtoConverter) {
+        this.chapterToChapterDtoConverter = chapterToChapterDtoConverter;
+    }
 
     @Override
     public DocumentDto convert(Document source) {
@@ -16,7 +29,7 @@ public class DocumentToDocumentDtoConverter implements Converter<Document, Docum
                 source.getImageUrl(),
                 source.getCreatedDate(),
                 source.getModifiedDate(),
-                source.getChapterIds()
+                chapterToChapterDtoConverter.convertChapters(source.getChapters())
                 );
     }
 }

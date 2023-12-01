@@ -17,24 +17,23 @@ public class Chapter implements Serializable {
     private final static String BASE_URL = "/api/v1/chapters/";
 
     // Attributes
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false, length = 100)
     private String title;
+    @Column(length = 1000)
     private String description;
     private boolean isNumbered; // true (default) e.g. ch1 (true), introduction (false)
     private String imageUrl;
+
     // Relations to other objects
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, mappedBy = "parentChapter")
-    private List<Chapter> subchapters = new ArrayList<>();
+    private List<Chapter> subChapters = new ArrayList<>();
     //private List<Content> contents;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_document_id")
+    @ManyToOne @JoinColumn(name = "parent_document_id")
     private Document parentDocument; // Parent document
-
-    @ManyToOne
-    @JoinColumn(name = "parent_chapter_id")
+    @ManyToOne @JoinColumn(name = "parent_chapter_id")
     private Chapter parentChapter; // Parent chapter
 
     // Ensure that only one parent is set
@@ -50,7 +49,7 @@ public class Chapter implements Serializable {
 
     public void addSubchapter(Chapter chapter) {
         chapter.setParentChapter(this);
-        this.subchapters.add(chapter);
+        this.subChapters.add(chapter);
     }
 
 }
