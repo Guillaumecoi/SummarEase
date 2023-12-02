@@ -46,7 +46,10 @@ public class DocumentService {
         oldDocument.setTitle(document.getTitle());
         oldDocument.setAuthor(document.getAuthor());
         oldDocument.setDescription(document.getDescription());
+        oldDocument.setForeword(document.getForeword());
+        oldDocument.setEndNote(document.getEndNote());
         oldDocument.setImageUrl(document.getImageUrl());
+        oldDocument.setDate(document.getDate());
         oldDocument.setModifiedDate(document.getModifiedDate());
         return this.documentRepository.save(oldDocument);
     }

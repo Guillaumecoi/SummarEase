@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -21,7 +22,11 @@ public class Document implements Serializable {
     @Getter
     private static final String DATE_TIME_FORMAT = "dd-MM-yyyy'T'HH:mm:ss"; // Also change in DocumentDto
     @Getter
+    private static final String DATE_FORMAT = "dd-MM-yyyy"; // Also change in DocumentDto
+    @Getter
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+    @Getter
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT);
 
     // Attributes
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +37,13 @@ public class Document implements Serializable {
     private String author;
     @Column(length = 1000)
     private String description;
+    @Column(length = 10000)
+    private String Foreword;
+    @Column(length = 10000)
+    private String endNote;
     private String imageUrl;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT)
+    private LocalDate date;
 
     // Metadata
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_FORMAT)
