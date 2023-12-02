@@ -25,6 +25,8 @@ public class Document implements Serializable {
     private static final String DATE_FORMAT = "dd-MM-yyyy"; // Also change in DocumentDto
     @Getter
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+    @Getter
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT);
 
     // Attributes
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

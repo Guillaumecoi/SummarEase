@@ -22,7 +22,10 @@ public class DocumentToDocumentDtoConverter implements Converter<Document, Docum
                 source.getTitle(),
                 source.getAuthor(),
                 source.getDescription(),
+                source.getForeword(),
+                source.getEndNote(),
                 source.getImageUrl(),
+                source.getDate(),
                 source.getCreatedDate(),
                 source.getModifiedDate(),
                 chapterToChapterDtoConverter.convertChapters(source.getChapters())

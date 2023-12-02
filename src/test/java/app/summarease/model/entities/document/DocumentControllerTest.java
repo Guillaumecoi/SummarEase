@@ -14,9 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import resources.DocumentObjects;
 
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,13 +42,15 @@ class DocumentControllerTest {
 
     //@Value("${api.endpoint.base-url}") // Spring will go to application-dev.yml to find the value and inject into this field.
     String baseUrl = Document.getBASE_URL();
-    DateTimeFormatter formatter = Document.getFORMATTER();
+    DateTimeFormatter dateTimeFormatter = Document.getFORMATTER();
+    DateTimeFormatter dateFormatter = Document.getDATE_FORMATTER();
 
+
+    DocumentObjects documentObjects = new DocumentObjects();
 
     List<Document> documents;
-
     Document document1;
-
+    Document updatedDocument1;
     Document document2;
 
     //Todo test for chapters and content
@@ -56,23 +58,9 @@ class DocumentControllerTest {
 
     @BeforeEach
     void setUp() {
-        document1 = new Document();
-        document1.setId(1L);
-        document1.setTitle("Document 1");
-        document1.setAuthor("Author 1");
-        document1.setDescription("Description 1");
-        document1.setImageUrl("https://picsum.photos/id/1/200/300");
-        document1.setCreatedDate(LocalDateTime.of(2020, 1, 1,0,0)); // January 1, 2020 00:00:00
-        document1.setModifiedDate(LocalDateTime.now().minusDays(1)); // Yesterday
-
-        document2 = new Document();
-        document2.setId(2L);
-        document2.setTitle("Document 2");
-        document2.setAuthor("Author 2");
-        document2.setDescription("Description 2");
-        document2.setImageUrl("https://picsum.photos/id/2/200/300");
-        document2.setCreatedDate(LocalDateTime.of(2020, 1, 2,0,0)); // January 2, 2020 00:00:00
-        document2.setModifiedDate(LocalDateTime.now()); // Today
+        document1 = documentObjects.getDocument1();
+        document2 = documentObjects.getDocument2();
+        updatedDocument1 = documentObjects.getUpdatedDocument1();
 
         documents = new ArrayList<>();
         documents.add(document1);
@@ -98,9 +86,12 @@ class DocumentControllerTest {
                 .andExpect(jsonPath("$.data.title").value(document1.getTitle()))
                 .andExpect(jsonPath("$.data.author").value(document1.getAuthor()))
                 .andExpect(jsonPath("$.data.description").value(document1.getDescription()))
+                .andExpect(jsonPath("$.data.foreword").value(document1.getForeword()))
+                .andExpect(jsonPath("$.data.endNote").value(document1.getEndNote()))
                 .andExpect(jsonPath("$.data.imageUrl").value(document1.getImageUrl()))
-                .andExpect(jsonPath("$.data.createdDate").value(document1.getCreatedDate().format(formatter)))
-                .andExpect(jsonPath("$.data.modifiedDate").value(document1.getModifiedDate().format(formatter)));
+                .andExpect(jsonPath("$.data.date").value(document1.getDate().format(dateFormatter)))
+                .andExpect(jsonPath("$.data.createdDate").value(document1.getCreatedDate().format(dateTimeFormatter)))
+                .andExpect(jsonPath("$.data.modifiedDate").value(document1.getModifiedDate().format(dateTimeFormatter)));
 
     }
 
@@ -132,66 +123,74 @@ class DocumentControllerTest {
                 .andExpect(jsonPath("$.data[0].title").value(document1.getTitle()))
                 .andExpect(jsonPath("$.data[0].author").value(document1.getAuthor()))
                 .andExpect(jsonPath("$.data[0].description").value(document1.getDescription()))
+                .andExpect(jsonPath("$.data[0].foreword").value(document1.getForeword()))
+                .andExpect(jsonPath("$.data[0].endNote").value(document1.getEndNote()))
                 .andExpect(jsonPath("$.data[0].imageUrl").value(document1.getImageUrl()))
-                .andExpect(jsonPath("$.data[0].createdDate").value(document1.getCreatedDate().format(formatter)))
-                .andExpect(jsonPath("$.data[0].modifiedDate").value(document1.getModifiedDate().format(formatter)))
+                .andExpect(jsonPath("$.data[0].date").value(document1.getDate().format(dateFormatter)))
+                .andExpect(jsonPath("$.data[0].createdDate").value(document1.getCreatedDate().format(dateTimeFormatter)))
+                .andExpect(jsonPath("$.data[0].modifiedDate").value(document1.getModifiedDate().format(dateTimeFormatter)))
                 .andExpect(jsonPath("$.data[1].id").value(document2.getId()))
                 .andExpect(jsonPath("$.data[1].title").value(document2.getTitle()))
                 .andExpect(jsonPath("$.data[1].author").value(document2.getAuthor()))
                 .andExpect(jsonPath("$.data[1].description").value(document2.getDescription()))
+                .andExpect(jsonPath("$.data[1].foreword").value(document2.getForeword()))
+                .andExpect(jsonPath("$.data[1].endNote").value(document2.getEndNote()))
                 .andExpect(jsonPath("$.data[1].imageUrl").value(document2.getImageUrl()))
-                .andExpect(jsonPath("$.data[1].createdDate").value(document2.getCreatedDate().format(formatter)))
-                .andExpect(jsonPath("$.data[1].modifiedDate").value(document2.getModifiedDate().format(formatter)
+                .andExpect(jsonPath("$.data[1].date").value(document2.getDate().format(dateFormatter)))
+                .andExpect(jsonPath("$.data[1].createdDate").value(document2.getCreatedDate().format(dateTimeFormatter)))
+                .andExpect(jsonPath("$.data[1].modifiedDate").value(document2.getModifiedDate().format(dateTimeFormatter)
         ));
     }
 
     @Test
     void testAddDocument_Success() throws Exception {
         // Arrange
-        DocumentDto documentDto = new DocumentDto(null, "Title",
-                "Author",
-                "Description",
-                "https://picsum.photos/id/1/200/300",
-                LocalDateTime.of(2023, 11, 1,0,0),
-                LocalDateTime.now(), null);
+        DocumentDto documentDto = new DocumentDto(null, // id should be created here
+                document1.getTitle(),
+                document1.getAuthor(),
+                document1.getDescription(),
+                document1.getForeword(),
+                document1.getEndNote(),
+                document1.getImageUrl(),
+                document1.getDate(),
+                document1.getCreatedDate(),
+                document1.getModifiedDate(), null);
 
         String json = objectMapper.writeValueAsString(documentDto);
 
-        Document savedDocument = new Document();
-        savedDocument.setId(1L);
-        savedDocument.setTitle("Title");
-        savedDocument.setAuthor("Author");
-        savedDocument.setDescription("Description");
-        savedDocument.setImageUrl("https://picsum.photos/id/1/200/300");
-        savedDocument.setCreatedDate(LocalDateTime.of(2023, 11, 1,0,0)); // November 1, 2023 00:00:00
-        savedDocument.setModifiedDate(LocalDateTime.now()); // Today
-
-        given(documentService.save(Mockito.any(Document.class))).willReturn(savedDocument);
+        given(documentService.save(Mockito.any(Document.class))).willReturn(document1);
 
         // Act & Assert
-
         this.mockMvc.perform(post(baseUrl).contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
                 .andExpect(jsonPath("$.message").value("Add Success"))
-                .andExpect(jsonPath("$.data.id").value(savedDocument.getId()))
-                .andExpect(jsonPath("$.data.title").value(savedDocument.getTitle()))
-                .andExpect(jsonPath("$.data.author").value(savedDocument.getAuthor()))
-                .andExpect(jsonPath("$.data.description").value(savedDocument.getDescription()))
-                .andExpect(jsonPath("$.data.imageUrl").value(savedDocument.getImageUrl()))
-                .andExpect(jsonPath("$.data.createdDate").value(savedDocument.getCreatedDate().format(formatter)));
+                .andExpect(jsonPath("$.data.id").value(document1.getId()))
+                .andExpect(jsonPath("$.data.title").value(document1.getTitle()))
+                .andExpect(jsonPath("$.data.author").value(document1.getAuthor()))
+                .andExpect(jsonPath("$.data.description").value(document1.getDescription()))
+                .andExpect(jsonPath("$.data.foreword").value(document1.getForeword()))
+                .andExpect(jsonPath("$.data.endNote").value(document1.getEndNote()))
+                .andExpect(jsonPath("$.data.imageUrl").value(document1.getImageUrl()))
+                .andExpect(jsonPath("$.data.date").value(document1.getDate().format(dateFormatter)))
+                .andExpect(jsonPath("$.data.createdDate").value(document1.getCreatedDate().format(dateTimeFormatter)))
+                .andExpect(jsonPath("$.data.modifiedDate").value(document1.getModifiedDate().format(dateTimeFormatter)));
     }
 
     @Test
     void testAddDocument_Failure_Title() throws Exception {
         // Title is null
         // Arrange
-        DocumentDto nullTitle = new DocumentDto(null, null,
-                "Author",
-                "Description",
-                "https://picsum.photos/id/1/200/300",
-                LocalDateTime.of(2023, 11, 1,0,0),
-                LocalDateTime.now(), null);
+        DocumentDto nullTitle = new DocumentDto(null,
+                null, // Title is null
+                document1.getAuthor(),
+                document1.getDescription(),
+                document1.getForeword(),
+                document1.getEndNote(),
+                document1.getImageUrl(),
+                document1.getDate(),
+                document1.getCreatedDate(),
+                document1.getModifiedDate(), null);
 
         String jsonNull = objectMapper.writeValueAsString(nullTitle);
 
@@ -204,12 +203,16 @@ class DocumentControllerTest {
 
         // Title is empty
         // Arrange
-        DocumentDto emptyTitle = new DocumentDto(null, "",
-                "Author",
-                "Description",
-                "https://picsum.photos/id/1/200/300",
-                LocalDateTime.of(2023, 11, 1,0,0),
-                LocalDateTime.now(), null);
+        DocumentDto emptyTitle = new DocumentDto(null,
+                "", // empty string
+                document1.getAuthor(),
+                document1.getDescription(),
+                document1.getForeword(),
+                document1.getEndNote(),
+                document1.getImageUrl(),
+                document1.getDate(),
+                document1.getCreatedDate(),
+                document1.getModifiedDate(), null);
 
         String jsonEmpty = objectMapper.writeValueAsString(emptyTitle);
 
@@ -222,12 +225,16 @@ class DocumentControllerTest {
 
         // Title is too short
         // Arrange
-        DocumentDto shortTitle = new DocumentDto(null, "12",
-                "Author",
-                "Description",
-                "https://picsum.photos/id/1/200/300",
-                LocalDateTime.of(2023, 11, 1,0,0),
-                LocalDateTime.now(), null);
+        DocumentDto shortTitle = new DocumentDto(null,
+                "12", // Title is too short
+                document1.getAuthor(),
+                document1.getDescription(),
+                document1.getForeword(),
+                document1.getEndNote(),
+                document1.getImageUrl(),
+                document1.getDate(),
+                document1.getCreatedDate(),
+                document1.getModifiedDate(), null);
 
         String jsonShort = objectMapper.writeValueAsString(shortTitle);
 
@@ -241,12 +248,16 @@ class DocumentControllerTest {
         // Title is too long
         // Arrange
         String longString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL";
-        DocumentDto longTitle = new DocumentDto(null, "",
-                "Author",
-                "Description",
-                "https://picsum.photos/id/1/200/300",
-                LocalDateTime.of(2023, 11, 1,0,0),
-                LocalDateTime.now(), null);
+        DocumentDto longTitle = new DocumentDto(null,
+                longString, // Title is too long"",
+                document1.getAuthor(),
+                document1.getDescription(),
+                document1.getForeword(),
+                document1.getEndNote(),
+                document1.getImageUrl(),
+                document1.getDate(),
+                document1.getCreatedDate(),
+                document1.getModifiedDate(), null);
 
         String jsonLong = objectMapper.writeValueAsString(longTitle);
 
@@ -263,12 +274,16 @@ class DocumentControllerTest {
     void testAddDocument_Failure_Date() throws Exception {
         // Created date is null
         // Arrange
-        DocumentDto nullCreatedDate = new DocumentDto(null, "Title",
-                "Author",
-                "Description",
-                "https://picsum.photos/id/1/200/300",
-                null,
-                LocalDateTime.now(), null);
+        DocumentDto nullCreatedDate = new DocumentDto(null,
+                document1.getTitle(),
+                document1.getAuthor(),
+                document1.getDescription(),
+                document1.getForeword(),
+                document1.getEndNote(),
+                document1.getImageUrl(),
+                document1.getDate(),
+                null, // Created date is null
+                document1.getModifiedDate(), null);
 
         String jsonCreate = objectMapper.writeValueAsString(nullCreatedDate);
 
@@ -282,12 +297,17 @@ class DocumentControllerTest {
 
         // Modified date is null
         // Arrange
-        DocumentDto nullModifiedDate = new DocumentDto(null, "Title",
-                "Author",
-                "Description",
-                "https://picsum.photos/id/1/200/300",
-                LocalDateTime.of(2023, 11, 1,0,0),
-                null, null);
+        DocumentDto nullModifiedDate = new DocumentDto(null,
+                document1.getTitle(),
+                document1.getAuthor(),
+                document1.getDescription(),
+                document1.getForeword(),
+                document1.getEndNote(),
+                document1.getImageUrl(),
+                document1.getDate(),
+                document1.getCreatedDate(),
+                null, // Modified date is null
+                null);
 
         String jsonModified = objectMapper.writeValueAsString(nullModifiedDate);
 
@@ -303,49 +323,52 @@ class DocumentControllerTest {
     @Test
     void testUpdateDocument_Success() throws Exception {
         // Arrange
-        DocumentDto documentDto = new DocumentDto(1L, "Title",
-                "Author",
-                "Description",
-                "https://picsum.photos/id/1/200/300",
-                LocalDateTime.of(2023, 11, 1,0,0),
-                LocalDateTime.now().minusDays(1), null);
+        DocumentDto documentDto = new DocumentDto(updatedDocument1.getId(),
+                updatedDocument1.getTitle(),
+                updatedDocument1.getAuthor(),
+                updatedDocument1.getDescription(),
+                updatedDocument1.getForeword(),
+                updatedDocument1.getEndNote(),
+                updatedDocument1.getImageUrl(),
+                updatedDocument1.getDate(),
+                document1.getCreatedDate(),
+                updatedDocument1.getModifiedDate(), null);
 
         String json = objectMapper.writeValueAsString(documentDto);
 
-        Document savedDocument = new Document();
-        savedDocument.setId(1L);
-        savedDocument.setTitle("Updated Title");
-        savedDocument.setAuthor("Updated Author");
-        savedDocument.setDescription("Updated Description");
-        savedDocument.setImageUrl("https://picsum.photos/id/2/200/300");
-        savedDocument.setCreatedDate(LocalDateTime.of(2023, 11, 1,0,0)); // November 1, 2023 00:00:00
-        savedDocument.setModifiedDate(LocalDateTime.now()); // Today
-
-        given(documentService.update(eq(1L), Mockito.any(Document.class))).willReturn(savedDocument);
+        given(documentService.update(eq(1L), Mockito.any(Document.class))).willReturn(updatedDocument1);
 
         // Act & Assert
 
-        this.mockMvc.perform(put(baseUrl + "/" + savedDocument.getId()).contentType(MediaType.APPLICATION_JSON).content(json))
+        this.mockMvc.perform(put(baseUrl + "/" + updatedDocument1.getId()).contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(StatusCode.SUCCESS))
                 .andExpect(jsonPath("$.message").value("Update Success"))
-                .andExpect(jsonPath("$.data.id").value(savedDocument.getId()))
-                .andExpect(jsonPath("$.data.title").value(savedDocument.getTitle()))
-                .andExpect(jsonPath("$.data.author").value(savedDocument.getAuthor()))
-                .andExpect(jsonPath("$.data.description").value(savedDocument.getDescription()))
-                .andExpect(jsonPath("$.data.imageUrl").value(savedDocument.getImageUrl()))
-                .andExpect(jsonPath("$.data.createdDate").value(savedDocument.getCreatedDate().format(formatter)));
+                .andExpect(jsonPath("$.data.id").value(updatedDocument1.getId()))
+                .andExpect(jsonPath("$.data.title").value(updatedDocument1.getTitle()))
+                .andExpect(jsonPath("$.data.author").value(updatedDocument1.getAuthor()))
+                .andExpect(jsonPath("$.data.description").value(updatedDocument1.getDescription()))
+                .andExpect(jsonPath("$.data.foreword").value(updatedDocument1.getForeword()))
+                .andExpect(jsonPath("$.data.endNote").value(updatedDocument1.getEndNote()))
+                .andExpect(jsonPath("$.data.imageUrl").value(updatedDocument1.getImageUrl()))
+                .andExpect(jsonPath("$.data.date").value(updatedDocument1.getDate().format(dateFormatter)))
+                .andExpect(jsonPath("$.data.createdDate").value(updatedDocument1.getCreatedDate().format(dateTimeFormatter)))
+                .andExpect(jsonPath("$.data.modifiedDate").value(updatedDocument1.getModifiedDate().format(dateTimeFormatter)));
     }
 
     @Test
     void testUpdateDocument_Failure() throws Exception {
         // Arrange
-        DocumentDto documentDto = new DocumentDto(1L, "Title",
-                "Author",
-                "Description",
-                "https://picsum.photos/id/1/200/300",
-                LocalDateTime.of(2023, 11, 1,0,0),
-                LocalDateTime.now().minusDays(1), null);
+        DocumentDto documentDto = new DocumentDto(null,
+                document1.getTitle(),
+                document1.getAuthor(),
+                document1.getDescription(),
+                document1.getForeword(),
+                document1.getEndNote(),
+                document1.getImageUrl(),
+                document1.getDate(),
+                document1.getCreatedDate(),
+                document1.getModifiedDate(), null);
 
         String json = objectMapper.writeValueAsString(documentDto);
         given(documentService.update(eq(1L), Mockito.any(Document.class))).willThrow(new ObjectNotFoundException("document", 1L));
