@@ -1,14 +1,10 @@
 package app.summarease.model.entities.document.dto;
 
-import app.summarease.model.entities.chapter.Chapter;
-import app.summarease.model.entities.chapter.dto.ChapterDto;
 import app.summarease.model.entities.chapter.dto.ChapterToChapterDtoConverter;
 import app.summarease.model.entities.document.Document;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Component
