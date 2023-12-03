@@ -55,7 +55,7 @@ class ChapterControllerTest {
         chapter2.setDescription("Description 2");
         chapter2.setNumbered(false);
         chapter2.setImageUrl("https://picsum.photos/id/2/200/300");
-        chapter1.addSubchapter(chapter2);
+        chapter1.addSubChapter(chapter2);
 
         chapters = new ArrayList<>();
         chapters.add(chapter1);

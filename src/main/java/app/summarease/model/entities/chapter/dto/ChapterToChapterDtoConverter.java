@@ -15,6 +15,8 @@ public class ChapterToChapterDtoConverter implements Converter<Chapter, ChapterD
         return new ChapterDto(source.getId(),
                 source.getTitle(),
                 source.getDescription(),
+                source.getForeword(),
+                source.getEndNote(),
                 source.isNumbered(),
                 source.getImageUrl(),
                 source.getParentDocument() != null ? source.getParentDocument().getId() : null,

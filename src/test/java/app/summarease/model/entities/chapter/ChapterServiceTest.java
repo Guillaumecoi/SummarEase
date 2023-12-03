@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import resources.ChapterObjects;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,35 +30,37 @@ class ChapterServiceTest {
     @InjectMocks
     ChapterService chapterService;
 
+    ChapterObjects chapterObjects = new ChapterObjects();
+
     List<Chapter> chapters;
 
-    Document parentDocument;
+    Document parentDocument1;
+    Document parentDocument2;
     Chapter chapter1;
     Chapter chapter2;
+    Chapter chapter3;
+    Chapter subChapter1;
+    Chapter subChapter2;
 
     @BeforeEach
     void setUp() {
-        parentDocument = new Document();
+        parentDocument1 = new Document();
+        parentDocument1.setId(1L);
+        parentDocument2 = new Document();
+        parentDocument2.setId(2L);
 
-        chapter1 = new Chapter();
-        chapter1.setId(1L);
-        chapter1.setTitle("Chapter 1");
-        chapter1.setDescription("Description 1");
-        chapter1.setNumbered(true);
-        chapter1.setImageUrl("https://picsum.photos/id/1/200/300");
-        chapter1.setParentDocument(parentDocument);
+        chapter1 = chapterObjects.createChapter1();
+        chapter1.setParentDocument(parentDocument1);
+        chapter2 = chapterObjects.getChapter2();
+        chapter2.setParentDocument(parentDocument1);
+        chapter3 = chapterObjects.getChapter3();
+        chapter3.setParentDocument(parentDocument2);
 
-        chapter2 = new Chapter();
-        chapter2.setId(2L);
-        chapter2.setTitle("Chapter 2");
-        chapter2.setDescription("Description 2");
-        chapter2.setNumbered(false);
-        chapter2.setImageUrl("https://picsum.photos/id/2/200/300");
-        chapter2.setParentChapter(chapter1);
+        subChapter1 = chapterObjects.getSubChapter1();
+        chapter1.addSubChapter(subChapter1);
+        subChapter2 = chapterObjects.getSubChapter2();
+        chapter1.addSubChapter(subChapter2);
 
-        chapters = new ArrayList<>();
-        chapters.add(chapter1);
-        chapters.add(chapter2);
     }
 
     @AfterEach
@@ -68,32 +71,34 @@ class ChapterServiceTest {
     void testFindById_Success() {
         // Arrange
         given(chapterRepository.findById(chapter1.getId())).willReturn(Optional.of(chapter1));  // chapter1 has parent document
-        given(chapterRepository.findById(chapter2.getId())).willReturn(Optional.of(chapter2));  // chapter2 has parent chapter
+        given(chapterRepository.findById(subChapter1.getId())).willReturn(Optional.of(subChapter1));  // chapter2 has parent chapter
 
         // Act
-        Chapter returnedChapter1 = chapterService.findById(chapter1.getId());
-        Chapter returnedChapter2 = chapterService.findById(chapter2.getId());
+        Chapter returnedChapter = chapterService.findById(chapter1.getId());
+        Chapter returnedSubChapter = chapterService.findById(subChapter2.getId());
 
         // Assert
-        assertNotNull(returnedChapter1, "Returned chapter1 should not be null");
-        assertEquals(chapter1.getId(), returnedChapter1.getId(), "The id of chapter1 should match");
-        assertEquals(chapter1.getTitle(), returnedChapter1.getTitle(), "The title of chapter1 should match");
-        assertEquals(chapter1.getDescription(), returnedChapter1.getDescription(), "The description of chapter1 should match");
-        assertEquals(chapter1.isNumbered(), returnedChapter1.isNumbered(), "The isNumbered flag of chapter1 should match");
-        assertEquals(chapter1.getImageUrl(), returnedChapter1.getImageUrl(), "The imageUrl of chapter1 should match");
-        assertEquals(chapter1.getParentDocument(), returnedChapter1.getParentDocument(), "The parent document of chapter1 should match");
-        assertEquals(chapter1.getParentChapter(), returnedChapter1.getParentChapter(), "The parent chapter of chapter1 should match");
+        assertNotNull(returnedChapter, "Returned chapter1 should not be null");
+        assertEquals(chapter1.getId(), returnedChapter.getId(), "The id of chapter1 should match");
+        assertEquals(chapter1.getTitle(), returnedChapter.getTitle(), "The title of chapter1 should match");
+        assertEquals(chapter1.getDescription(), returnedChapter.getDescription(), "The description of chapter1 should match");
+        assertEquals(chapter1.getForeword(), returnedChapter.getForeword(), "The foreword of chapter1 should match");
+        assertEquals(chapter1.getEndNote(), returnedChapter.getEndNote(), "The endNote of chapter1 should match");
+        assertEquals(chapter1.isNumbered(), returnedChapter.isNumbered(), "The isNumbered flag of chapter1 should match");
+        assertEquals(chapter1.getImageUrl(), returnedChapter.getImageUrl(), "The imageUrl of chapter1 should match");
+        assertEquals(chapter1.getParentDocument(), returnedChapter.getParentDocument(), "The parent document of chapter1 should match");
+        assertEquals(chapter1.getParentChapter(), returnedChapter.getParentChapter(), "The parent chapter of chapter1 should match");
         verify(chapterRepository, times(1)).findById(chapter1.getId()); // Verifying that the repository's findById method was called exactly once with chapter1's ID
 
-        assertNotNull(returnedChapter2, "Returned chapter2 should not be null");
-        assertEquals(chapter2.getId(), returnedChapter2.getId(), "The id of chapter2 should match");
-        assertEquals(chapter2.getTitle(), returnedChapter2.getTitle(), "The title of chapter2 should match");
-        assertEquals(chapter2.getDescription(), returnedChapter2.getDescription(), "The description of chapter2 should match");
-        assertEquals(chapter2.isNumbered(), returnedChapter2.isNumbered(), "The isNumbered flag of chapter2 should match");
-        assertEquals(chapter2.getImageUrl(), returnedChapter2.getImageUrl(), "The imageUrl of chapter2 should match");
-        assertEquals(chapter2.getParentDocument(), returnedChapter2.getParentDocument(), "The parent document of chapter2 should match");
-        assertEquals(chapter2.getParentChapter(), returnedChapter2.getParentChapter(), "The parent chapter of chapter2 should match");
-        verify(chapterRepository, times(1)).findById(chapter2.getId()); // Verifying that the repository's findById method was called exactly once with chapter2's ID
+        assertNotNull(returnedSubChapter, "Returned chapter2 should not be null");
+        assertEquals(subChapter2.getId(), returnedSubChapter.getId(), "The id of chapter2 should match");
+        assertEquals(subChapter2.getTitle(), returnedSubChapter.getTitle(), "The title of chapter2 should match");
+        assertEquals(subChapter2.getDescription(), returnedSubChapter.getDescription(), "The description of chapter2 should match");
+        assertEquals(subChapter2.isNumbered(), returnedSubChapter.isNumbered(), "The isNumbered flag of chapter2 should match");
+        assertEquals(subChapter2.getImageUrl(), returnedSubChapter.getImageUrl(), "The imageUrl of chapter2 should match");
+        assertEquals(subChapter2.getParentDocument(), returnedSubChapter.getParentDocument(), "The parent document of chapter2 should match");
+        assertEquals(subChapter2.getParentChapter(), returnedSubChapter.getParentChapter(), "The parent chapter of chapter2 should match");
+        verify(chapterRepository, times(1)).findById(subChapter2.getId()); // Verifying that the repository's findById method was called exactly once with chapter2's ID
     }
 
     @Test
@@ -106,5 +111,14 @@ class ChapterServiceTest {
         Exception exception = assertThrows(ObjectNotFoundException.class, () -> chapterService.findById(id));
         assertEquals("Could not find chapter with Id: " + id, exception.getMessage());
         verify(chapterRepository, times(1)).findById(id); // Verifying that the repository's findById method was called exactly once with chapter1's ID
+    }
+
+    @Test
+    void testFindByDocumentId_Success() {
+        // Arrange
+        Long documentId = parentDocument1.getId();
+        given(chapterRepository.findByParentDocumentId(documentId)).willReturn(chapters);
+
+
     }
 }

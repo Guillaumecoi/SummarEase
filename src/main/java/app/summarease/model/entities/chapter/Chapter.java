@@ -23,6 +23,10 @@ public class Chapter implements Serializable {
     private String title;
     @Column(length = 1000)
     private String description;
+    @Column(length = 10000)
+    private String Foreword;
+    @Column(length = 10000)
+    private String endNote;
     private boolean isNumbered; // true (default) e.g. ch1 (true), introduction (false)
     private String imageUrl;
 
@@ -47,7 +51,7 @@ public class Chapter implements Serializable {
         this.parentChapter = chapter;
     }
 
-    public void addSubchapter(Chapter chapter) {
+    public void addSubChapter(Chapter chapter) {
         chapter.setParentChapter(this);
         this.subChapters.add(chapter);
     }

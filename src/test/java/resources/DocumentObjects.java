@@ -17,19 +17,7 @@ public class DocumentObjects {
         this.documentToDocumentDtoConverter = new DocumentToDocumentDtoConverter(new ChapterToChapterDtoConverter());
     }
 
-
     public Document getDocument1() {
-        return createDoucment1();
-    }
-
-    public Document getUpdatedDocument1() {
-        return createUpdatedDocument1();
-    }
-
-    public Document getDocument2() {
-        return createDoucment2();
-    }
-    private Document createDoucment1() {
         Document document1 = new Document();
         document1.setId(1L);
         document1.setTitle("Document 1");
@@ -44,8 +32,8 @@ public class DocumentObjects {
         return document1;
     }
 
-    private Document createUpdatedDocument1() {
-        Document updatedDocument1 = createDoucment1();
+    public Document getUpdatedDocument1() {
+        Document updatedDocument1 = getDocument1();
         updatedDocument1.setTitle("Updated Document 1");
         updatedDocument1.setAuthor("Updated Author 1");
         updatedDocument1.setDescription("Updated Description 1");
@@ -57,7 +45,7 @@ public class DocumentObjects {
         return updatedDocument1;
     }
 
-    private Document createDoucment2() {
+    public Document getDocument2() {
         Document document2 = new Document();
         document2.setId(2L);
         document2.setTitle("Document 2");

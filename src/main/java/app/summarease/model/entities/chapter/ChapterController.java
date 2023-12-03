@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChapterController {
 
     private final ChapterService chapterService;
-
     private final ChapterToChapterDtoConverter chapterToChapterDtoConverter;
 
     public ChapterController(ChapterService chapterService, ChapterToChapterDtoConverter chapterToChapterDtoConverter) {

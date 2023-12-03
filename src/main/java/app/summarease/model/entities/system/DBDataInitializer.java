@@ -43,7 +43,7 @@ public class DBDataInitializer implements CommandLineRunner {
         doc1Chapter1.setDescription("This is the introduction chapter.");
         doc1Chapter1.setImageUrl("https://picsum.photos/id/4/200/300");
         doc1Chapter1.setNumbered(false);
-        doc1Chapter1.addSubchapter(doc1Chapter2);
+        doc1Chapter1.addSubChapter(doc1Chapter2);
 
         doc1Chapter2.setTitle("Getting Started");
         doc1Chapter2.setDescription("This is the getting started chapter.");
